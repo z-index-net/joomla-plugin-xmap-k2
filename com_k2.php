@@ -15,7 +15,7 @@ final class xmap_com_k2 {
 	
 	private static $views = array('itemlist');
 
-    static function getTree(&$xmap, &$parent, &$params) {
+    public static function getTree(&$xmap, &$parent, &$params) {
     	$uri = new JUri($parent->link);
     	
     	if(!in_array($uri->getVar('view'), self::$views)) {
