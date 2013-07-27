@@ -78,10 +78,10 @@ final class xmap_com_k2 {
     	$db = JFactory::getDbo();
     
     	$query = $db->getQuery(true)
-    	->select(array('id', 'name', 'parent'))
-    	->from('#__k2_categories')
-    	->where('published = 1')
-    	->order('ordering');
+		    	->select(array('id', 'name', 'parent'))
+		    	->from('#__k2_categories')
+		    	->where('published = 1')
+		    	->order('ordering');
     	
     	if(!empty($ids)) {
     		$query->where('id IN(' . implode(',', $db->quote($ids)) . ')');
@@ -128,12 +128,12 @@ final class xmap_com_k2 {
     	$db = JFactory::getDbo();
     
     	$query = $db->getQuery(true)
-    	->select(array('id', 'title'))
-    	->from('#__k2_items')
-    	->where('catid = ' . $db->Quote($catid))
-    	->where('published = 1')
-    	->where('trash = 0')
-    	->order('ordering');
+		    	->select(array('id', 'title'))
+		    	->from('#__k2_items')
+		    	->where('catid = ' . $db->Quote($catid))
+		    	->where('published = 1')
+		    	->where('trash = 0')
+		    	->order('ordering');
     
     	if (!$params['show_unauth']) {
     		$query->where('access IN(' . $params['groups'] . ')');
