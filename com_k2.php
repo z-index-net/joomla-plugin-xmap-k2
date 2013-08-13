@@ -89,7 +89,7 @@ final class xmap_com_k2 {
 		    	->select(array('c.id', 'c.name', 'c.parent'))
 		    	->from('#__k2_categories AS c')
 		    	->where('c.published = 1')
-		    	->where('c.tr4sh = 1')
+		    	->where('c.trash = 1')
 		    	->order('c.ordering');
     	
     	if(!empty($ids)) {
