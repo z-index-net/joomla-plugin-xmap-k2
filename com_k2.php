@@ -13,12 +13,12 @@ defined('_JEXEC') or die;
 
 final class xmap_com_k2 {
 	
-	private static $views = array('itemlist');
+	private static $layouts = array('category', 'tag', 'user');
 
     public static function getTree(&$xmap, &$parent, &$params) {
     	$uri = new JUri($parent->link);
     	
-    	if(!in_array($uri->getVar('view'), self::$views)) {
+    	if(!in_array($uri->getVar('layout'), self::$layouts)) {
     		return;
     	}
     	
@@ -60,16 +60,24 @@ final class xmap_com_k2 {
     	$params['item_priority'] = $priority;
     	$params['item_changefreq'] = $changefreq;
     	
-    	switch($uri->getVar('view')) {
-    		case 'itemlist':
+    	switch($uri->getVar('layout')) {
+    		case 'category':
     			$categories = JFactory::getApplication()->getMenu()->getItem($parent->id)->params->get('categories');
     			if(count($categories) == 1) {
-    				self::getItems($xmap, $parent, $params, $categories[0]);
+    				self::getItems($xmap, $parent, $params, 'category', $categories[0]);
     			}elseif(count($categories) > 1) {
 	    			self::getCategoryTree($xmap, $parent, $params, 0, $categories);
     			}else{
 	    			self::getCategoryTree($xmap, $parent, $params, 0);
     			}
+    		break;
+    		
+    		case 'tag': 
+    			self::getItems($xmap, $parent, $params, 'tag', $uri->getVar('tag'));
+    		break;
+    		
+    		case 'user':
+    			self::getItems($xmap, $parent, $params, 'user', $uri->getVar('id'));
     		break;
     	}
     }
@@ -78,19 +86,20 @@ final class xmap_com_k2 {
     	$db = JFactory::getDbo();
     
     	$query = $db->getQuery(true)
-		    	->select(array('id', 'name', 'parent'))
-		    	->from('#__k2_categories')
-		    	->where('published = 1')
-		    	->order('ordering');
+		    	->select(array('c.id', 'c.name', 'c.parent'))
+		    	->from('#__k2_categories AS c')
+		    	->where('c.published = 1')
+		    	->where('c.tr4sh = 1')
+		    	->order('c.ordering');
     	
     	if(!empty($ids)) {
-    		$query->where('id IN(' . implode(',', $db->quote($ids)) . ')');
+    		$query->where('c.id IN(' . implode(',', $db->quote($ids)) . ')');
     	}else{
-    		$query->where('parent =' . $db->quote($parent_id));
+    		$query->where('c.parent =' . $db->quote($parent_id));
     	}
     
     	if (!$params['show_unauth']) {
-    		$query->where('access IN(' . $params['groups'] . ')');
+    		$query->where('c.access IN(' . $params['groups'] . ')');
     	}
     
     	$db->setQuery($query);
@@ -110,13 +119,13 @@ final class xmap_com_k2 {
     		$node->browserNav = $parent->browserNav;
     		$node->priority = $params['category_priority'];
     		$node->changefreq = $params['category_changefreq'];
-    		$node->pid = $row->parent_id;
+    		$node->pid = $row->parent;
     		$node->link = K2HelperRoute::getCategoryRoute($row->id);
     			
     		if ($xmap->printNode($node) !== false) {
     			self::getCategoryTree($xmap, $parent, $params, $row->id);
     			if ($params['include_items']) {
-    				self::getItems($xmap, $parent, $params, $row->id);
+    				self::getItems($xmap, $parent, $params, 'category', $row->id);
     			}
     		}
     	}
@@ -124,21 +133,40 @@ final class xmap_com_k2 {
     	$xmap->changeLevel(-1);
     }
     
-    private static function getItems(&$xmap, &$parent, &$params, $catid) {
+    private static function getItems(&$xmap, &$parent, &$params, $mode, $linkId) {
     	$db = JFactory::getDbo();
-    
+    	$now = JFactory::getDate()->toSql();
+    	
     	$query = $db->getQuery(true)
-		    	->select(array('id', 'title'))
-		    	->from('#__k2_items')
-		    	->where('catid = ' . $db->Quote($catid))
-		    	->where('published = 1')
-		    	->where('trash = 0')
-		    	->order('ordering');
+		    	->select(array('i.id', 'i.title', 'i.catid'))
+		    	->from('#__k2_items AS i')
+		    	->where('i.published = 1')
+		    	->where('i.trash = 0')
+		    	->where('(i.publish_up = ' . $db->quote($db->getNullDate()) . ' OR i.publish_up <= ' . $db->quote($now) . ')')
+		    	->where('(i.publish_down = ' . $db->quote($db->getNullDate()) . ' OR i.publish_down >= ' . $db->quote($now) . ')')
+		    	->order('i.ordering');
     
     	if (!$params['show_unauth']) {
-    		$query->where('access IN(' . $params['groups'] . ')');
+    		$query->where('i.access IN(' . $params['groups'] . ')');
     	}
-    
+    	
+    	switch($mode) {
+    		case 'category':
+    			$query->where('i.catid = ' . $db->Quote($linkId));
+    		break;
+    		
+    		case 'tag':
+    			$query->join('INNER', '#__k2_tags_xref AS x ON(x.itemID = i.id)');
+    			$query->join('INNER', '#__k2_tags AS t ON(t.id = x.tagID)');
+    			$query->where('t.name = ' . $db->Quote($linkId));
+    			$query->where('t.published = 1');
+    		break;
+    			
+    		case 'user':
+    			$query->where('i.created_by = ' . $db->Quote($linkId));
+    		break;
+    	}
+    	
     	$db->setQuery($query);
     	$rows = $db->loadObjectList();
     
@@ -156,7 +184,7 @@ final class xmap_com_k2 {
     		$node->browserNav = $parent->browserNav;
     		$node->priority = $params['item_priority'];
     		$node->changefreq = $params['item_changefreq'];
-    		$node->link = K2HelperRoute::getItemRoute($row->id, $catid);
+    		$node->link = K2HelperRoute::getItemRoute($row->id, $row->catid);
     			
     		$xmap->printNode($node);
     	}
