@@ -15,7 +15,7 @@ final class xmap_com_k2 {
 	
 	private static $layouts = array('category', 'tag', 'user');
 
-    public static function getTree(&$xmap, &$parent, &$params) {
+    public static function getTree(XmapXmlDisplayer &$xmap, stdClass &$parent, array &$params) {
     	$uri = new JUri($parent->link);
     	
     	if(!in_array($uri->getVar('layout'), self::$layouts)) {
@@ -82,14 +82,14 @@ final class xmap_com_k2 {
     	}
     }
     
-    private static function getCategoryTree(&$xmap, &$parent, &$params, $parent_id, $ids=null) {
+    private static function getCategoryTree(XmapXmlDisplayer &$xmap, stdClass &$parent, array &$params, $parent_id, $ids=null) {
     	$db = JFactory::getDbo();
     
     	$query = $db->getQuery(true)
 		    	->select(array('c.id', 'c.name', 'c.parent'))
 		    	->from('#__k2_categories AS c')
 		    	->where('c.published = 1')
-		    	->where('c.trash = 1')
+		    	->where('c.trash = 0')
 		    	->order('c.ordering');
     	
     	if(!empty($ids)) {
@@ -133,7 +133,7 @@ final class xmap_com_k2 {
     	$xmap->changeLevel(-1);
     }
     
-    private static function getItems(&$xmap, &$parent, &$params, $mode, $linkId) {
+    private static function getItems(XmapXmlDisplayer &$xmap, stdClass &$parent, array &$params, $mode, $linkId) {
     	$db = JFactory::getDbo();
     	$now = JFactory::getDate()->toSql();
     	
