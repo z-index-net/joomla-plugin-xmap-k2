@@ -60,6 +60,8 @@ final class xmap_com_k2 {
     	$params['item_priority'] = $priority;
     	$params['item_changefreq'] = $changefreq;
     	
+    	$params['language_filter'] = JFactory::getApplication()->getLanguageFilter();
+    	
     	switch($uri->getVar('layout')) {
     		case 'category':
     			$categories = JFactory::getApplication()->getMenu()->getItem($parent->id)->params->get('categories');
@@ -100,6 +102,10 @@ final class xmap_com_k2 {
     
     	if (!$params['show_unauth']) {
     		$query->where('c.access IN(' . $params['groups'] . ')');
+    	}
+    	
+    	if($params['language_filter']) {
+    		$query->where('c.language IN(' . $db->quote(JFactory::getLanguage()->getTag()) . ', ' . $db->quote('*') . ')');
     	}
     
     	$db->setQuery($query);
@@ -148,6 +154,10 @@ final class xmap_com_k2 {
     
     	if (!$params['show_unauth']) {
     		$query->where('i.access IN(' . $params['groups'] . ')');
+    	}
+    	
+    	if($params['language_filter']) {
+    		$query->where('i.language IN(' . $db->quote(JFactory::getLanguage()->getTag()) . ', ' . $db->quote('*') . ')');
     	}
     	
     	switch($mode) {
