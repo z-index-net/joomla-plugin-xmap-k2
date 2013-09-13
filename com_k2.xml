@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="xmap" method="upgrade">
-	<name>Xmap - K2 Plugin</name>
+	<name>Xmap - K2</name>
 	<author>Branko Wilhelm</author>
 	<creationDate>Jul 2013</creationDate>
 	<copyright>Copyright (C) 2013 Branko Wilhelm</copyright>

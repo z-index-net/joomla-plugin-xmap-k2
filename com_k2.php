@@ -7,9 +7,9 @@
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-require_once JPATH_SITE . '/components/com_k2/helpers/route.php';
- 
 defined('_JEXEC') or die;
+
+require_once JPATH_SITE . '/components/com_k2/helpers/route.php';
 
 final class xmap_com_k2 {
 	
