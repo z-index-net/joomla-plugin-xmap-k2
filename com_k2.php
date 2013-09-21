@@ -9,58 +9,58 @@
 
 defined('_JEXEC') or die;
 
-require_once JPATH_SITE . '/components/com_k2/helpers/route.php';
-
 final class xmap_com_k2 {
 	
 	private static $layouts = array('category', 'tag', 'user');
 
-    public static function getTree(XmapDisplayer &$xmap, stdClass &$parent, array &$params) {
-    	$uri = new JUri($parent->link);
+	private static $enabled = false;
+	
+	public function __construct() {
+		self::$enabled = JComponentHelper::isEnabled('com_k2');
+		
+		if(self::$enabled) {
+			require_once JPATH_SITE . '/components/com_k2/helpers/route.php';
+		}
+	}
+	
+	public static function getTree(XmapDisplayer &$xmap, stdClass &$parent, array &$params) {
+		$uri = new JUri($parent->link);
+		
+		if(!self::$enabled || !in_array($uri->getVar('layout'), self::$layouts)) {
+			return;
+		}
+
+		$params['groups'] = implode(',', JFactory::getUser()->getAuthorisedViewLevels());
+		
+		$params['language_filter'] = JFactory::getApplication()->getLanguageFilter();
     	
-    	if(!in_array($uri->getVar('layout'), self::$layouts)) {
-    		return;
+    	$params['include_items'] = JArrayHelper::getValue($params, 'include_items', 1);
+    	$params['include_items'] = ($params['include_items'] == 1 || ($params['include_items'] == 2 && $xmap->view == 'xml') || ($params['include_items'] == 3 && $xmap->view == 'html'));
+    	
+    	$params['show_unauth'] = JArrayHelper::getValue($params, 'show_unauth', 0);
+    	$params['show_unauth'] = ($params['show_unauth'] == 1 || ( $params['show_unauth'] == 2 && $xmap->view == 'xml') || ( $params['show_unauth'] == 3 && $xmap->view == 'html'));
+    	
+    	$params['category_priority'] = JArrayHelper::getValue($params, 'category_priority', $parent->priority);
+    	$params['category_changefreq'] = JArrayHelper::getValue($params, 'category_changefreq', $parent->changefreq);
+    	
+    	if($params['category_priority'] == -1) {
+    		$params['category_priority'] = $parent->priority;
     	}
     	
-    	$include_items = JArrayHelper::getValue($params, 'include_items');
-    	$include_items = ($include_items == 1 || ($include_items == 2 && $xmap->view == 'xml') || ($include_items == 3 && $xmap->view == 'html'));
-    	$params['include_items'] = $include_items;
-    	
-    	$show_unauth = JArrayHelper::getValue($params, 'show_unauth');
-    	$show_unauth = ($show_unauth == 1 || ( $show_unauth == 2 && $xmap->view == 'xml') || ( $show_unauth == 3 && $xmap->view == 'html'));
-    	$params['show_unauth'] = $show_unauth;
-    	
-    	$params['groups'] = implode(',', JFactory::getUser()->getAuthorisedViewLevels());
-    	
-    	$priority = JArrayHelper::getValue($params, 'category_priority', $parent->priority);
-    	$changefreq = JArrayHelper::getValue($params, 'category_changefreq', $parent->changefreq);
-    	
-    	if($priority == -1) {
-    		$priority = $parent->priority;
+    	if($params['category_changefreq'] == -1) {
+    		$params['category_changefreq'] = $parent->changefreq;
     	}
     	
-    	if($changefreq == -1) {
-    		$changefreq = $parent->changefreq;
-    	}
-    		
-    	$params['category_priority'] = $priority;
-    	$params['category_changefreq'] = $changefreq;
+    	$params['item_priority'] = JArrayHelper::getValue($params, 'item_priority', $parent->priority);
+    	$params['item_changefreq'] = JArrayHelper::getValue($params, 'item_changefreq', $parent->changefreq);
     	
-    	$priority = JArrayHelper::getValue($params, 'item_priority', $parent->priority);
-    	$changefreq = JArrayHelper::getValue($params, 'item_changefreq', $parent->changefreq);
-    	
-    	if($priority == -1) {
-    		$priority = $parent->priority;
+    	if($params['item_priority'] == -1) {
+    		$params['item_priority'] = $parent->priority;
     	}
     	
-    	if($changefreq == -1) {
-    		$changefreq = $parent->changefreq;
+    	if($params['item_changefreq'] == -1) {
+    		$params['item_changefreq'] = $parent->changefreq;
     	}
-    	
-    	$params['item_priority'] = $priority;
-    	$params['item_changefreq'] = $changefreq;
-    	
-    	$params['language_filter'] = JFactory::getApplication()->getLanguageFilter();
     	
     	switch($uri->getVar('layout')) {
     		case 'category':
@@ -88,7 +88,7 @@ final class xmap_com_k2 {
     	$db = JFactory::getDbo();
     
     	$query = $db->getQuery(true)
-		    	->select(array('c.id', 'c.name', 'c.parent'))
+		    	->select(array('c.id', 'c.name', 'c.alias', 'c.parent'))
 		    	->from('#__k2_categories AS c')
 		    	->where('c.published = 1')
 		    	->where('c.trash = 0')
@@ -126,7 +126,7 @@ final class xmap_com_k2 {
     		$node->priority = $params['category_priority'];
     		$node->changefreq = $params['category_changefreq'];
     		$node->pid = $row->parent;
-    		$node->link = K2HelperRoute::getCategoryRoute($row->id);
+    		$node->link = K2HelperRoute::getCategoryRoute($row->id . ':' . $row->alias);
     			
     		if ($xmap->printNode($node) !== false) {
     			self::getCategoryTree($xmap, $parent, $params, $row->id);
@@ -141,10 +141,10 @@ final class xmap_com_k2 {
     
     private static function getItems(XmapDisplayer &$xmap, stdClass &$parent, array &$params, $mode, $linkId) {
     	$db = JFactory::getDbo();
-    	$now = JFactory::getDate()->toSql();
+    	$now = JFactory::getDate('now', 'UTC')->toSql();
     	
     	$query = $db->getQuery(true)
-		    	->select(array('i.id', 'i.title', 'i.catid'))
+		    	->select(array('i.id', 'i.title', 'i.alias', 'i.catid'))
 		    	->from('#__k2_items AS i')
 		    	->where('i.published = 1')
 		    	->where('i.trash = 0')
@@ -194,7 +194,7 @@ final class xmap_com_k2 {
     		$node->browserNav = $parent->browserNav;
     		$node->priority = $params['item_priority'];
     		$node->changefreq = $params['item_changefreq'];
-    		$node->link = K2HelperRoute::getItemRoute($row->id, $row->catid);
+    		$node->link = K2HelperRoute::getItemRoute($row->id . ':' . $row->alias, $row->catid);
     			
     		$xmap->printNode($node);
     	}

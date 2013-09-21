@@ -19,7 +19,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="include_items" type="list" default="0" label="XMAP_SETTING_INCLUDE_ITEMS_LABEL" description="XMAP_SETTING_INCLUDE_ITEMS_DESC">
+				<field name="include_items" type="list" default="1" label="XMAP_SETTING_INCLUDE_ITEMS_LABEL" description="XMAP_SETTING_INCLUDE_ITEMS_DESC">
 					<option value="0">XMAP_OPTION_NEVER</option>
 					<option value="1">XMAP_OPTION_ALWAYS</option>
 					<option value="2">XMAP_OPTION_XML_ONLY</option>
