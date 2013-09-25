@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="lang">
-		<copy file="./lang/en-GB.${phing.project.name}.ini" todir="../../administrator/language/en-GB/" />
+		<copy file="./lang/en-GB.${phing.project.name}.ini" todir="../../../administrator/language/en-GB/" />
 	</target>
 
 	<target name="build" depends="cleanup">
