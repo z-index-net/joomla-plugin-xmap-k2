@@ -83,6 +83,6 @@
 		</fields>
 	</config>
 	<updateservers>
-		<server type="extension" priority="1" name="Xmap - K2">http://www.z-index.net/en/joomla-xmap-plugins/xmap-k2/updatestream.xml</server>
+		<server type="collection" priority="1" name="z-index development">http://www.z-index.net/en/extensions.xml</server>
 	</updateservers>
 </extension>
