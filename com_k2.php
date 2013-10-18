@@ -130,9 +130,7 @@ final class xmap_com_k2 {
     			
     		if ($xmap->printNode($node) !== false) {
     			self::getCategoryTree($xmap, $parent, $params, $row->id);
-    			if ($params['include_items']) {
-    				self::getItems($xmap, $parent, $params, 'category', $row->id);
-    			}
+				self::getItems($xmap, $parent, $params, 'category', $row->id);
     		}
     	}
     
@@ -140,6 +138,10 @@ final class xmap_com_k2 {
     }
     
     private static function getItems(XmapDisplayer &$xmap, stdClass &$parent, array &$params, $mode, $linkId) {
+        if (!$params['include_items']) {
+            return;
+        }
+        
     	$db = JFactory::getDbo();
     	$now = JFactory::getDate('now', 'UTC')->toSql();
     	
