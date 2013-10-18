@@ -144,7 +144,7 @@ final class xmap_com_k2 {
     	$now = JFactory::getDate('now', 'UTC')->toSql();
     	
     	$query = $db->getQuery(true)
-		    	->select(array('i.id', 'i.title', 'i.alias', 'i.catid'))
+		    	->select(array('i.id', 'i.title', 'i.alias', 'i.catid', 'i.modified', 'i.metakey'))
 		    	->from('#__k2_items AS i')
 		    	->where('i.published = 1')
 		    	->where('i.trash = 0')
@@ -190,6 +190,9 @@ final class xmap_com_k2 {
     		$node = new stdclass;
     		$node->id = $parent->id;
     		$node->name = $row->title;
+    		$node->modified = $row->modified;
+    		$node->keywords = $row->metakey;
+    		$node->newsItem = 1;
     		$node->uid = $parent->uid . '_' . $row->id;
     		$node->browserNav = $parent->browserNav;
     		$node->priority = $params['item_priority'];
