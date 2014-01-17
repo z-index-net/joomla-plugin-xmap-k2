@@ -129,7 +129,6 @@ final class xmap_com_k2 {
     		$node->link = K2HelperRoute::getCategoryRoute($row->id . ':' . $row->alias);
     			
     		if ($xmap->printNode($node) !== false) {
-    			self::getCategoryTree($xmap, $parent, $params, $row->id);
 				self::getItems($xmap, $parent, $params, 'category', $row->id);
     		}
     	}
@@ -164,6 +163,7 @@ final class xmap_com_k2 {
     	
     	switch($mode) {
     		case 'category':
+    		    self::getCategoryTree($xmap, $parent, $params, $linkId);
     			$query->where('i.catid = ' . $db->Quote($linkId));
     		break;
     		
