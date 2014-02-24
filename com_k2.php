@@ -108,7 +108,7 @@ final class xmap_com_k2
             ->where('(i.publish_down = ' . $db->quote($db->getNullDate()) . ' OR i.publish_down >= ' . $db->quote($now) . ')');
 
         if ($xmap->isNews) {
-            $query->order('i.created');
+            $query->order('i.created DESC');
         } else {
             $query->order('i.ordering');
         }
