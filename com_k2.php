@@ -105,8 +105,13 @@ final class xmap_com_k2
             ->where('i.published = 1')
             ->where('i.trash = 0')
             ->where('(i.publish_up = ' . $db->quote($db->getNullDate()) . ' OR i.publish_up <= ' . $db->quote($now) . ')')
-            ->where('(i.publish_down = ' . $db->quote($db->getNullDate()) . ' OR i.publish_down >= ' . $db->quote($now) . ')')
-            ->order('i.ordering');
+            ->where('(i.publish_down = ' . $db->quote($db->getNullDate()) . ' OR i.publish_down >= ' . $db->quote($now) . ')');
+
+        if ($xmap->isNews) {
+            $query->order('i.created');
+        } else {
+            $query->order('i.ordering');
+        }
 
         if (!$params['show_unauth']) {
             $query->where('i.access IN(' . $params['groups'] . ')');
