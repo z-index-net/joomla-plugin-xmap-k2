@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="xmap" method="upgrade">
-    <name>PLG_XMAP_K2</name>
+<extension version="3.0" type="plugin" group="xmap" method="upgrade">
+    <name>PLG_XMAP_COM_K2</name>
     <author>Branko Wilhelm</author>
     <creationDate>Jul 2013</creationDate>
-    <copyright>Copyright (C) 2013 - 2014 Branko Wilhelm</copyright>
+    <copyright>Copyright (c) 2013 - 2015 Branko Wilhelm</copyright>
     <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
     <authorEmail>branko.wilhelm@gmail.com</authorEmail>
     <authorUrl>www.z-index.net</authorUrl>
     <version>@REVISION@</version>
-    <description>PLG_XMAP_K2_DESC</description>
+    <description>PLG_XMAP_COM_K2_DESC</description>
     <files>
         <filename plugin="com_k2">com_k2.php</filename>
     </files>
@@ -22,20 +22,20 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="include_items" type="list" default="1" label="PLG_XMAP_K2_INCLUDE_ITEMS_LABEL" description="PLG_XMAP_K2_INCLUDE_ITEMS_DESC">
-                    <option value="0">PLG_XMAP_K2_NEVER</option>
-                    <option value="1">PLG_XMAP_K2_ALWAYS</option>
-                    <option value="2">PLG_XMAP_K2_XML_ONLY</option>
-                    <option value="3">PLG_XMAP_K2_HTML_ONLY</option>
+                <field name="include_items" type="list" default="1" label="PLG_XMAP_COM_K2_INCLUDE_ITEMS_LABEL" description="PLG_XMAP_COM_K2_INCLUDE_ITEMS_DESC">
+                    <option value="0">PLG_XMAP_COM_K2_NEVER</option>
+                    <option value="1">PLG_XMAP_COM_K2_ALWAYS</option>
+                    <option value="2">PLG_XMAP_COM_K2_XML_ONLY</option>
+                    <option value="3">PLG_XMAP_COM_K2_HTML_ONLY</option>
                 </field>
-                <field name="show_unauth" type="list" default="0" label="PLG_XMAP_K2_SHOW_UNAUTH_LABEL" description="PLG_XMAP_K2_SHOW_UNAUTH_DESC">
-                    <option value="0">PLG_XMAP_K2_NEVER</option>
-                    <option value="1">PLG_XMAP_K2_ALWAYS</option>
-                    <option value="2">PLG_XMAP_K2_XML_ONLY</option>
-                    <option value="3">PLG_XMAP_K2_HTML_ONLY</option>
+                <field name="show_unauth" type="list" default="0" label="PLG_XMAP_COM_K2_SHOW_UNAUTH_LABEL" description="PLG_XMAP_COM_K2_SHOW_UNAUTH_DESC">
+                    <option value="0">PLG_XMAP_COM_K2_NEVER</option>
+                    <option value="1">PLG_XMAP_COM_K2_ALWAYS</option>
+                    <option value="2">PLG_XMAP_COM_K2_XML_ONLY</option>
+                    <option value="3">PLG_XMAP_COM_K2_HTML_ONLY</option>
                 </field>
-                <field name="category_priority" type="list" default="-1" label="PLG_XMAP_K2_CATEGORY_PRIORITY_LABEL" description="PLG_XMAP_K2_CATEGORY_PRIORITY_DESC">
-                    <option value="-1">PLG_XMAP_K2_USE_PARENT_MENU</option>
+                <field name="category_priority" type="list" default="-1" label="PLG_XMAP_COM_K2_CATEGORY_PRIORITY_LABEL" description="PLG_XMAP_COM_K2_CATEGORY_PRIORITY_DESC">
+                    <option value="-1">PLG_XMAP_COM_K2_USE_PARENT_MENU</option>
                     <option value="0.0">0.0</option>
                     <option value="0.1">0.1</option>
                     <option value="0.2">0.2</option>
@@ -48,18 +48,18 @@
                     <option value="0.9">0.9</option>
                     <option value="1">1</option>
                 </field>
-                <field name="category_changefreq" type="list" default="-1" label="PLG_XMAP_K2_CATEGORY_CHANGE_FREQ_LABEL" description="PLG_XMAP_K2_CATEGORY_CHANGE_FREQ_DESC">
-                    <option value="-1">PLG_XMAP_K2_USE_PARENT_MENU</option>
-                    <option value="always">PLG_XMAP_K2_ALWAYS</option>
-                    <option value="hourly">PLG_XMAP_K2_HOURLY</option>
-                    <option value="daily">PLG_XMAP_K2_DAILY</option>
-                    <option value="weekly">PLG_XMAP_K2_WEEKLY</option>
-                    <option value="monthly">PLG_XMAP_K2_MONTHLY</option>
-                    <option value="yearly">PLG_XMAP_K2_YEARLY</option>
-                    <option value="never">PLG_XMAP_K2_NEVER</option>
+                <field name="category_changefreq" type="list" default="-1" label="PLG_XMAP_COM_K2_CATEGORY_CHANGE_FREQ_LABEL" description="PLG_XMAP_COM_K2_CATEGORY_CHANGE_FREQ_DESC">
+                    <option value="-1">PLG_XMAP_COM_K2_USE_PARENT_MENU</option>
+                    <option value="always">PLG_XMAP_COM_K2_ALWAYS</option>
+                    <option value="hourly">PLG_XMAP_COM_K2_HOURLY</option>
+                    <option value="daily">PLG_XMAP_COM_K2_DAILY</option>
+                    <option value="weekly">PLG_XMAP_COM_K2_WEEKLY</option>
+                    <option value="monthly">PLG_XMAP_COM_K2_MONTHLY</option>
+                    <option value="yearly">PLG_XMAP_COM_K2_YEARLY</option>
+                    <option value="never">PLG_XMAP_COM_K2_NEVER</option>
                 </field>
-                <field name="item_priority" type="list" default="-1" label="PLG_XMAP_K2_ITEM_PRIORITY_LABEL" description="PLG_XMAP_K2_ITEM_PRIORITY_DESC">
-                    <option value="-1">PLG_XMAP_K2_USE_PARENT_MENU</option>
+                <field name="item_priority" type="list" default="-1" label="PLG_XMAP_COM_K2_ITEM_PRIORITY_LABEL" description="PLG_XMAP_COM_K2_ITEM_PRIORITY_DESC">
+                    <option value="-1">PLG_XMAP_COM_K2_USE_PARENT_MENU</option>
                     <option value="0.0">0.0</option>
                     <option value="0.1">0.1</option>
                     <option value="0.2">0.2</option>
@@ -72,15 +72,15 @@
                     <option value="0.9">0.9</option>
                     <option value="1">1</option>
                 </field>
-                <field name="item_changefreq" type="list" default="-1" label="PLG_XMAP_K2_ITEM_CHANGE_FREQ_LABEL" description="PLG_XMAP_K2_ITEM_CHANGE_FREQ_DESC">
-                    <option value="-1">PLG_XMAP_K2_USE_PARENT_MENU</option>
-                    <option value="always">PLG_XMAP_K2_ALWAYS</option>
-                    <option value="hourly">PLG_XMAP_K2_HOURLY</option>
-                    <option value="daily">PLG_XMAP_K2_DAILY</option>
-                    <option value="weekly">PLG_XMAP_K2_WEEKLY</option>
-                    <option value="monthly">PLG_XMAP_K2_MONTHLY</option>
-                    <option value="yearly">PLG_XMAP_K2_YEARLY</option>
-                    <option value="never">PLG_XMAP_K2_NEVER</option>
+                <field name="item_changefreq" type="list" default="-1" label="PLG_XMAP_COM_K2_ITEM_CHANGE_FREQ_LABEL" description="PLG_XMAP_COM_K2_ITEM_CHANGE_FREQ_DESC">
+                    <option value="-1">PLG_XMAP_COM_K2_USE_PARENT_MENU</option>
+                    <option value="always">PLG_XMAP_COM_K2_ALWAYS</option>
+                    <option value="hourly">PLG_XMAP_COM_K2_HOURLY</option>
+                    <option value="daily">PLG_XMAP_COM_K2_DAILY</option>
+                    <option value="weekly">PLG_XMAP_COM_K2_WEEKLY</option>
+                    <option value="monthly">PLG_XMAP_COM_K2_MONTHLY</option>
+                    <option value="yearly">PLG_XMAP_COM_K2_YEARLY</option>
+                    <option value="never">PLG_XMAP_COM_K2_NEVER</option>
                 </field>
             </fieldset>
         </fields>
