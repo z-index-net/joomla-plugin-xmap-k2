@@ -26,7 +26,8 @@ class xmap_com_k2
     {
         $uri = new JUri($parent->link);
 
-        if (!self::$enabled || !in_array($uri->getVar('layout'), self::$layouts)) {
+        if (!self::$enabled || !in_array($uri->getVar('layout'), self::$layouts))
+        {
             return;
         }
 
@@ -43,33 +44,41 @@ class xmap_com_k2
         $params['category_priority'] = JArrayHelper::getValue($params, 'category_priority', $parent->priority);
         $params['category_changefreq'] = JArrayHelper::getValue($params, 'category_changefreq', $parent->changefreq);
 
-        if ($params['category_priority'] == -1) {
+        if ($params['category_priority'] == -1)
+        {
             $params['category_priority'] = $parent->priority;
         }
 
-        if ($params['category_changefreq'] == -1) {
+        if ($params['category_changefreq'] == -1)
+        {
             $params['category_changefreq'] = $parent->changefreq;
         }
 
         $params['item_priority'] = JArrayHelper::getValue($params, 'item_priority', $parent->priority);
         $params['item_changefreq'] = JArrayHelper::getValue($params, 'item_changefreq', $parent->changefreq);
 
-        if ($params['item_priority'] == -1) {
+        if ($params['item_priority'] == -1)
+        {
             $params['item_priority'] = $parent->priority;
         }
 
-        if ($params['item_changefreq'] == -1) {
+        if ($params['item_changefreq'] == -1)
+        {
             $params['item_changefreq'] = $parent->changefreq;
         }
 
-        switch ($uri->getVar('layout')) {
+        switch ($uri->getVar('layout'))
+        {
             case 'category':
                 $categories = JFactory::getApplication()->getMenu()->getItem($parent->id)->params->get('categories');
-                if (count($categories) == 1) {
+                if (count($categories) == 1)
+                {
                     self::getItems($xmap, $parent, $params, 'category', $categories[0]);
-                } elseif (count($categories) > 1) {
+                } elseif (count($categories) > 1)
+                {
                     self::getCategoryTree($xmap, $parent, $params, 0, $categories);
-                } else {
+                } else
+                {
                     self::getCategoryTree($xmap, $parent, $params, 0);
                 }
                 break;
@@ -86,11 +95,13 @@ class xmap_com_k2
 
     private static function getItems(XmapDisplayer &$xmap, stdClass &$parent, array &$params, $mode, $linkId)
     {
-        if ($mode == 'category') {
+        if ($mode == 'category')
+        {
             self::getCategoryTree($xmap, $parent, $params, $linkId);
         }
 
-        if (!$params['include_items']) {
+        if (!$params['include_items'])
+        {
             return;
         }
 
@@ -105,21 +116,26 @@ class xmap_com_k2
             ->where('(i.publish_up = ' . $db->quote($db->getNullDate()) . ' OR i.publish_up <= ' . $db->quote($now) . ')')
             ->where('(i.publish_down = ' . $db->quote($db->getNullDate()) . ' OR i.publish_down >= ' . $db->quote($now) . ')');
 
-        if ($xmap->isNews) {
+        if ($xmap->isNews)
+        {
             $query->order('i.created DESC');
-        } else {
+        } else
+        {
             $query->order('i.ordering');
         }
 
-        if (!$params['show_unauth']) {
+        if (!$params['show_unauth'])
+        {
             $query->where('i.access IN(' . $params['groups'] . ')');
         }
 
-        if ($params['language_filter']) {
+        if ($params['language_filter'])
+        {
             $query->where('i.language IN(' . $db->quote(JFactory::getLanguage()->getTag()) . ', ' . $db->quote('*') . ')');
         }
 
-        switch ($mode) {
+        switch ($mode)
+        {
             case 'category':
                 $query->where('i.catid = ' . $db->Quote($linkId));
                 break;
@@ -139,16 +155,19 @@ class xmap_com_k2
         $db->setQuery($query);
         $rows = $db->loadObjectList();
 
-        if (empty($rows)) {
+        if (empty($rows))
+        {
             return;
         }
 
         $xmap->changeLevel(1);
 
-        foreach ($rows as $row) {
+        foreach ($rows as $row)
+        {
             $node = new stdclass;
             $node->id = $parent->id;
             $node->name = $row->title;
+            $node->title = $row->title;
             $node->modified = $row->modified;
             $node->keywords = $row->metakey;
             $node->newsItem = 1;
@@ -175,30 +194,36 @@ class xmap_com_k2
             ->where('c.trash = 0')
             ->order('c.ordering');
 
-        if (!empty($ids)) {
+        if (!empty($ids))
+        {
             $query->where('c.id IN(' . implode(',', $db->quote($ids)) . ')');
-        } else {
+        } else
+        {
             $query->where('c.parent =' . $db->quote($parent_id));
         }
 
-        if (!$params['show_unauth']) {
+        if (!$params['show_unauth'])
+        {
             $query->where('c.access IN(' . $params['groups'] . ')');
         }
 
-        if ($params['language_filter']) {
+        if ($params['language_filter'])
+        {
             $query->where('c.language IN(' . $db->quote(JFactory::getLanguage()->getTag()) . ', ' . $db->quote('*') . ')');
         }
 
         $db->setQuery($query);
         $rows = $db->loadObjectList();
 
-        if (empty($rows)) {
+        if (empty($rows))
+        {
             return;
         }
 
         $xmap->changeLevel(1);
 
-        foreach ($rows as $row) {
+        foreach ($rows as $row)
+        {
             $node = new stdclass;
             $node->id = $parent->id;
             $node->name = $row->name;
@@ -209,7 +234,8 @@ class xmap_com_k2
             $node->pid = $row->parent;
             $node->link = K2HelperRoute::getCategoryRoute($row->id . ':' . $row->alias);
 
-            if ($xmap->printNode($node) !== false) {
+            if ($xmap->printNode($node) !== false)
+            {
                 self::getItems($xmap, $parent, $params, 'category', $row->id);
             }
         }
