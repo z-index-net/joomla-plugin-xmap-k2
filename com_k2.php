@@ -11,8 +11,14 @@ defined('_JEXEC') or die;
 
 class xmap_com_k2
 {
+    /**
+     * @var array
+     */
     private static $layouts = array('category', 'tag', 'user');
 
+    /**
+     * @var bool
+     */
     private static $enabled = false;
 
     public function __construct()
@@ -22,7 +28,14 @@ class xmap_com_k2
         JLoader::register('K2HelperRoute', JPATH_SITE . '/components/com_k2/helpers/route.php');
     }
 
-    public static function getTree(XmapDisplayer &$xmap, stdClass &$parent, array &$params)
+    /**
+     * @param XmapDisplayerInterface $xmap
+     * @param stdClass $parent
+     * @param array $params
+     *
+     * @throws Exception
+     */
+    public static function getTree($xmap, stdClass $parent, array &$params)
     {
         $uri = new JUri($parent->link);
 
@@ -93,7 +106,14 @@ class xmap_com_k2
         }
     }
 
-    private static function getItems(XmapDisplayer &$xmap, stdClass &$parent, array &$params, $mode, $linkId)
+    /**
+     * @param XmapDisplayerInterface $xmap
+     * @param stdClass $parent
+     * @param array $params
+     * @param $mode
+     * @param int $linkId
+     */
+    private static function getItems($xmap, stdClass $parent, array &$params, $mode, $linkId)
     {
         if ($mode == 'category')
         {
@@ -183,7 +203,14 @@ class xmap_com_k2
         $xmap->changeLevel(-1);
     }
 
-    private static function getCategoryTree(XmapDisplayer &$xmap, stdClass &$parent, array &$params, $parent_id, $ids = null)
+    /**
+     * @param XmapDisplayerInterface $xmap
+     * @param stdClass $parent
+     * @param array $params
+     * @param int $parent_id
+     * @param int[]|null $ids
+     */
+    private static function getCategoryTree($xmap, stdClass $parent, array &$params, $parent_id, $ids = null)
     {
         $db = JFactory::getDbo();
 
