@@ -14,12 +14,12 @@ class xmap_com_k2
     /**
      * @var array
      */
-    private static $layouts = array('category', 'tag', 'user');
+    protected static $layouts = array('category', 'tag', 'user');
 
     /**
      * @var bool
      */
-    private static $enabled = false;
+    protected static $enabled = false;
 
     public function __construct()
     {
@@ -33,7 +33,7 @@ class xmap_com_k2
      * @param stdClass $parent
      * @param array $params
      *
-     * @throws Exception
+     * @return bool
      */
     public static function getTree($xmap, stdClass $parent, array &$params)
     {
@@ -41,7 +41,7 @@ class xmap_com_k2
 
         if (!self::$enabled || !in_array($uri->getVar('layout'), self::$layouts))
         {
-            return;
+            return false;
         }
 
         $params['groups'] = implode(',', JFactory::getUser()->getAuthorisedViewLevels());
@@ -55,30 +55,16 @@ class xmap_com_k2
         $params['show_unauth'] = ($params['show_unauth'] == 1 || ($params['show_unauth'] == 2 && $xmap->view == 'xml') || ($params['show_unauth'] == 3 && $xmap->view == 'html'));
 
         $params['category_priority'] = JArrayHelper::getValue($params, 'category_priority', $parent->priority);
+        $params['category_priority'] = ($params['category_priority'] == -1) ? $parent->priority : $params['category_priority'];
+
         $params['category_changefreq'] = JArrayHelper::getValue($params, 'category_changefreq', $parent->changefreq);
-
-        if ($params['category_priority'] == -1)
-        {
-            $params['category_priority'] = $parent->priority;
-        }
-
-        if ($params['category_changefreq'] == -1)
-        {
-            $params['category_changefreq'] = $parent->changefreq;
-        }
+        $params['category_changefreq'] = ($params['category_changefreq'] == -1) ? $parent->changefreq : $params['category_changefreq'];
 
         $params['item_priority'] = JArrayHelper::getValue($params, 'item_priority', $parent->priority);
+        $params['item_priority'] = ($params['item_priority'] == -1) ? $parent->priority : $params['item_priority'];
+
         $params['item_changefreq'] = JArrayHelper::getValue($params, 'item_changefreq', $parent->changefreq);
-
-        if ($params['item_priority'] == -1)
-        {
-            $params['item_priority'] = $parent->priority;
-        }
-
-        if ($params['item_changefreq'] == -1)
-        {
-            $params['item_changefreq'] = $parent->changefreq;
-        }
+        $params['item_changefreq'] = ($params['item_changefreq'] == -1) ? $parent->changefreq : $params['item_changefreq'];
 
         switch ($uri->getVar('layout'))
         {
@@ -86,22 +72,22 @@ class xmap_com_k2
                 $categories = JFactory::getApplication()->getMenu()->getItem($parent->id)->params->get('categories');
                 if (count($categories) == 1)
                 {
-                    self::getItems($xmap, $parent, $params, 'category', $categories[0]);
+                    return self::getItems($xmap, $parent, $params, 'category', $categories[0]);
                 } elseif (count($categories) > 1)
                 {
-                    self::getCategoryTree($xmap, $parent, $params, 0, $categories);
+                    return self::getCategoryTree($xmap, $parent, $params, 0, $categories);
                 } else
                 {
-                    self::getCategoryTree($xmap, $parent, $params, 0);
+                    return self::getCategoryTree($xmap, $parent, $params, 0);
                 }
                 break;
 
             case 'tag':
-                self::getItems($xmap, $parent, $params, 'tag', $uri->getVar('tag'));
+                return self::getItems($xmap, $parent, $params, 'tag', $uri->getVar('tag'));
                 break;
 
             case 'user':
-                self::getItems($xmap, $parent, $params, 'user', $uri->getVar('id'));
+                return self::getItems($xmap, $parent, $params, 'user', $uri->getVar('id'));
                 break;
         }
     }
@@ -110,10 +96,12 @@ class xmap_com_k2
      * @param XmapDisplayerInterface $xmap
      * @param stdClass $parent
      * @param array $params
-     * @param $mode
+     * @param string $mode
      * @param int $linkId
+     *
+     * @return bool
      */
-    private static function getItems($xmap, stdClass $parent, array &$params, $mode, $linkId)
+    protected static function getItems($xmap, stdClass $parent, array &$params, $mode, $linkId)
     {
         if ($mode == 'category')
         {
@@ -122,7 +110,7 @@ class xmap_com_k2
 
         if (!$params['include_items'])
         {
-            return;
+            return false;
         }
 
         $db = JFactory::getDbo();
@@ -173,18 +161,26 @@ class xmap_com_k2
         }
 
         $db->setQuery($query);
-        $rows = $db->loadObjectList();
+
+        try
+        {
+            $rows = $db->loadObjectList();
+
+        } catch (RuntimeException $e)
+        {
+            return false;
+        }
 
         if (empty($rows))
         {
-            return;
+            return false;
         }
 
         $xmap->changeLevel(1);
 
         foreach ($rows as $row)
         {
-            $node = new stdclass;
+            $node = new stdClass;
             $node->id = $parent->id;
             $node->name = $row->title;
             $node->title = $row->title;
@@ -201,6 +197,8 @@ class xmap_com_k2
         }
 
         $xmap->changeLevel(-1);
+
+        return true;
     }
 
     /**
@@ -209,8 +207,10 @@ class xmap_com_k2
      * @param array $params
      * @param int $parent_id
      * @param int[]|null $ids
+     *
+     * @return bool
      */
-    private static function getCategoryTree($xmap, stdClass $parent, array &$params, $parent_id, $ids = null)
+    protected static function getCategoryTree($xmap, stdClass $parent, array &$params, $parent_id, $ids = null)
     {
         $db = JFactory::getDbo();
 
@@ -240,18 +240,26 @@ class xmap_com_k2
         }
 
         $db->setQuery($query);
-        $rows = $db->loadObjectList();
+
+        try
+        {
+            $rows = $db->loadObjectList();
+
+        } catch (RuntimeException $e)
+        {
+            return false;
+        }
 
         if (empty($rows))
         {
-            return;
+            return false;
         }
 
         $xmap->changeLevel(1);
 
         foreach ($rows as $row)
         {
-            $node = new stdclass;
+            $node = new stdClass;
             $node->id = $parent->id;
             $node->name = $row->name;
             $node->uid = $parent->uid . '_cid_' . $row->id;
@@ -268,5 +276,7 @@ class xmap_com_k2
         }
 
         $xmap->changeLevel(-1);
+
+        return true;
     }
 }

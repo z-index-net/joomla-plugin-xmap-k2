@@ -18,6 +18,10 @@
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_xmap_com_k2.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_xmap_com_k2.sys.ini</language>
+        <language tag="de-DE">de-DE/de-DE.plg_xmap_com_k2.ini</language>
+        <language tag="de-DE">de-DE/de-DE.plg_xmap_com_k2.sys.ini</language>
+        <language tag="fr-FR">fr-FR/fr-FR.plg_xmap_com_k2.ini</language>
+        <language tag="fr-FR">fr-FR/fr-FR.plg_xmap_com_k2.sys.ini</language>
     </languages>
     <config>
         <fields name="params">
